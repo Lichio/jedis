@@ -17,6 +17,8 @@ import redis.clients.jedis.util.JedisURIHelper;
 
 /**
  * PoolableObjectFactory custom impl.
+ * 池化对象（此处为Jedis）的管理工厂
+ * 实现对象的创建、销毁、有效性校验、激活、钝化
  */
 class JedisFactory implements PooledObjectFactory<Jedis> {
   private final AtomicReference<HostAndPort> hostAndPort = new AtomicReference<HostAndPort>();

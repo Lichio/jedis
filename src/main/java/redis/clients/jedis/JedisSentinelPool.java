@@ -132,6 +132,11 @@ public class JedisSentinelPool extends JedisPoolAbstract {
     }
   }
 
+  /**
+   * 通过Sentinel节点及masterName找到master节点地址
+   *
+   * 启动对每个sentinel的监听
+   */
   private HostAndPort initSentinels(Set<String> sentinels, final String masterName) {
 
     HostAndPort master = null;
@@ -148,6 +153,7 @@ public class JedisSentinelPool extends JedisPoolAbstract {
       try {
         jedis = new Jedis(hap);
 
+        // 通过Sentinel节点及masterName找到master节点地址
         List<String> masterAddr = jedis.sentinelGetMasterAddrByName(masterName);
 
         // connected to sentinel...
@@ -188,6 +194,7 @@ public class JedisSentinelPool extends JedisPoolAbstract {
 
     log.info("Redis master running at " + master + ", starting Sentinel listeners...");
 
+    // 启动对每个sentinel的监听
     for (String sentinel : sentinels) {
       final HostAndPort hap = HostAndPort.parseString(sentinel);
       MasterListener masterListener = new MasterListener(masterName, hap.getHost(), hap.getPort());
@@ -292,6 +299,10 @@ public class JedisSentinelPool extends JedisPoolAbstract {
               initPool(toHostAndPort(masterAddr)); 
           }
 
+          // 订阅sentinel上关于master地址改变的消息
+          // +switch-master <master name> <oldip> <oldport> <newip> <newport> ：配置变更，主服务器的 IP 和地址已经改变
+          // 订阅的channel是"+switch-master"，如果接收到该channel上的消息，则执行onMessage方法
+          // 此处onMessage方法的作用是：当master节点变更时，根据新的master节点重新初始化redis连接处
           j.subscribe(new JedisPubSub() {
             @Override
             public void onMessage(String channel, String message) {

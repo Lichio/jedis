@@ -31,6 +31,9 @@ import redis.clients.jedis.params.ZAddParams;
 import redis.clients.jedis.params.ZIncrByParams;
 import redis.clients.jedis.util.SafeEncoder;
 
+/**
+ * 基于底层socket通信的原始redis客户端（处理二进制命令）
+ */
 public class BinaryClient extends Connection {
 
   private boolean isInMulti;

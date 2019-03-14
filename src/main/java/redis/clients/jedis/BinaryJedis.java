@@ -37,6 +37,9 @@ import redis.clients.jedis.params.ZIncrByParams;
 import redis.clients.jedis.util.JedisByteHashMap;
 import redis.clients.jedis.util.JedisURIHelper;
 
+/**
+ * 代理Client的工作，并加入了事务Transaction和批量操作Pipeline
+ */
 public class BinaryJedis implements BasicCommands, BinaryJedisCommands, MultiKeyBinaryCommands,
     AdvancedBinaryJedisCommands, BinaryScriptingCommands, Closeable {
   protected Client client = null;
@@ -2225,6 +2228,10 @@ public class BinaryJedis implements BasicCommands, BinaryJedisCommands, MultiKey
     return client.getStatusCodeReply();
   }
 
+  /**
+   * 基于当前客户端连接创建一个Pipeline对象
+   * @return
+   */
   public Pipeline pipelined() {
     pipeline = new Pipeline();
     pipeline.setClient(client);

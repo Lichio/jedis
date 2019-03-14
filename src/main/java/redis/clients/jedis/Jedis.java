@@ -29,6 +29,13 @@ import redis.clients.jedis.params.ZIncrByParams;
 import redis.clients.jedis.util.SafeEncoder;
 import redis.clients.jedis.util.Slowlog;
 
+
+/**
+ * 单个redis客户端和服务端的整个交互过程就是一个Socket通信过程：按照一定的协议发送请求，之后读取返回结果。
+ * Jedis实例是非线程安全的（信息交互使用的都是全局变量）
+ * @see Connection#outputStream
+ * @see Connection#inputStream
+ */
 public class Jedis extends BinaryJedis implements JedisCommands, MultiKeyCommands,
     AdvancedJedisCommands, ScriptingCommands, BasicCommands, ClusterCommands, SentinelCommands, ModuleCommands {
 

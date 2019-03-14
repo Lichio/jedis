@@ -11,6 +11,9 @@ import redis.clients.jedis.util.JedisURIHelper;
 import redis.clients.jedis.util.ShardInfo;
 import redis.clients.jedis.util.Sharded;
 
+/**
+ * 对应一个redis服务端实例
+ */
 public class JedisShardInfo extends ShardInfo<Jedis> {
 
   private int connectionTimeout;

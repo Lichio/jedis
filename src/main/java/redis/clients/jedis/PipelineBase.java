@@ -11,6 +11,12 @@ import redis.clients.jedis.params.SetParams;
 import redis.clients.jedis.params.ZAddParams;
 import redis.clients.jedis.params.ZIncrByParams;
 
+/**
+ * 实现redis中允许进行批量操作的命令
+ * @see BinaryRedisPipeline
+ * @see RedisPipeline
+ *
+ */
 public abstract class PipelineBase extends Queable implements BinaryRedisPipeline, RedisPipeline {
 
   protected abstract Client getClient(String key);

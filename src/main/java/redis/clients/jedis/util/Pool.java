@@ -11,6 +11,10 @@ import redis.clients.jedis.exceptions.JedisConnectionException;
 import redis.clients.jedis.exceptions.JedisException;
 import redis.clients.jedis.exceptions.JedisExhaustedPoolException;
 
+/**
+ * 代理GenericObjectPool的功能
+ * @param <T>
+ */
 public abstract class Pool<T> implements Closeable {
   protected GenericObjectPool<T> internalPool;
 

@@ -14,6 +14,14 @@ import redis.clients.jedis.params.ZAddParams;
 import redis.clients.jedis.params.ZIncrByParams;
 import redis.clients.jedis.util.Hashing;
 
+/**
+ * 具有数据分片功能的redis客户端
+ *
+ * 构造ShardedJedis实例时需要所有服务节点的信息，
+ * 进行数据时 先通过ShardedJedisPool获取单个ShardedJedis实例，再通过key计算得到对应的服务节点，然后直接创建单个Jedis实例进行通信
+ *
+ * 数据分片 所有操作都需要由客户端主动进行，服务节点之间没有关联
+ */
 public class ShardedJedis extends BinaryShardedJedis implements JedisCommands, Closeable {
 
   protected ShardedJedisPool dataSource = null;

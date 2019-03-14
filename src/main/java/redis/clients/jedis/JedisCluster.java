@@ -19,6 +19,20 @@ import org.apache.commons.pool2.impl.GenericObjectPoolConfig;
 import redis.clients.jedis.params.SetParams;
 import redis.clients.jedis.util.JedisClusterHashTagUtil;
 
+/**
+ * Redis 集群
+ *
+ * 构造JedisCluster实例需要集群中一个或多个节点的信息，初始化集群时可以获得集群中所有节点及槽的信息，
+ *
+ * Dummy（傀儡）客户端：根据Redis的重定向机制获取slot对应的节点信息
+ * 优点：实现简单
+ * 缺点：增加了IO开销
+ *
+ * Smart（智能）客户端：进行数据操作时 先根据key计算的得到指定的槽，再根据槽找到对应的服务节点，然后用JedisPool管理Jedis实例与服务端进行通信
+ * 通过在内部维护slots -> nodes的关系，可以直接找到槽对应的节点，最大化IO效率
+ *
+ * 集群对于用户来说 所有服务节点为一个整体，所有数据交互把服务端当成一个节点，槽的选择细节对用户透明
+ */
 public class JedisCluster extends BinaryJedisCluster implements JedisClusterCommands,
     MultiKeyJedisClusterCommands, JedisClusterScriptingCommands {
 

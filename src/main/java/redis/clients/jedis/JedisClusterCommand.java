@@ -19,6 +19,11 @@ public abstract class JedisClusterCommand<T> {
     this.maxAttempts = maxAttempts;
   }
 
+  /**
+   * 模板回调方法，用于命令的具体执行
+   * @param connection
+   * @return
+   */
   public abstract T execute(Jedis connection);
 
   public T run(String key) {
@@ -89,6 +94,7 @@ public abstract class JedisClusterCommand<T> {
     Jedis connection = null;
     try {
 
+      // 如果出现重定向异常，直接访问重定向的节点
       if (redirect != null) {
         connection = this.connectionHandler.getConnectionFromNode(redirect.getTargetNode());
         if (redirect instanceof JedisAskDataException) {
@@ -96,9 +102,9 @@ public abstract class JedisClusterCommand<T> {
           connection.asking();
         }
       } else {
-        if (tryRandomNode) {
+        if (tryRandomNode) { // 随机获取活跃连接
           connection = connectionHandler.getConnection();
-        } else {
+        } else { // 根据槽获取指定连接
           connection = connectionHandler.getConnectionFromSlot(slot);
         }
       }
@@ -109,6 +115,7 @@ public abstract class JedisClusterCommand<T> {
       throw jnrcne;
     } catch (JedisConnectionException jce) {
       // release current connection before recursion
+      // 如果出现异常，在重试之前释放连接
       releaseConnection(connection);
       connection = null;
 
@@ -124,6 +131,7 @@ public abstract class JedisClusterCommand<T> {
       return runWithRetries(slot, attempts - 1, tryRandomNode, redirect);
     } catch (JedisRedirectionException jre) {
       // if MOVED redirection occurred,
+      // 出现MOVED重定向异常
       if (jre instanceof JedisMovedDataException) {
         // it rebuilds cluster's slot cache recommended by Redis cluster specification
         this.connectionHandler.renewSlotCache(connection);

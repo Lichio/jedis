@@ -18,6 +18,15 @@ public class Queable {
     return response;
   }
 
+  /**
+   * 每一条指令对应一个结果，该方法为每一条指令添加一个对应的Response
+   * 返回的结果通过
+   * @see Queable#generateResponse(java.lang.Object)
+   * 方法注入到对应的Response中
+   * @param builder
+   * @param <T>
+   * @return
+   */
   protected <T> Response<T> getResponse(Builder<T> builder) {
     Response<T> lr = new Response<T>(builder);
     pipelinedResponses.add(lr);

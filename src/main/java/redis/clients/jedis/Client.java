@@ -20,6 +20,9 @@ import redis.clients.jedis.params.ZAddParams;
 import redis.clients.jedis.params.ZIncrByParams;
 import redis.clients.jedis.util.SafeEncoder;
 
+/**
+ * redis客户端
+ */
 public class Client extends BinaryClient implements Commands {
 
   public Client() {

@@ -12,6 +12,10 @@ import java.util.List;
 
 import redis.clients.jedis.exceptions.JedisException;
 
+/**
+ * 功能同redis.clients.jedis.JedisPubSub，处理二进制命令
+ * @see JedisPubSub
+ */
 public abstract class BinaryJedisPubSub {
   private int subscribedChannels = 0;
   private Client client;

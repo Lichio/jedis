@@ -7,6 +7,7 @@ import java.util.List;
 import redis.clients.jedis.exceptions.JedisDataException;
 
 /**
+ * Redis 事务
  * Transaction is nearly identical to Pipeline, only differences are the multi/discard behaviors
  */
 public class Transaction extends MultiKeyPipelineBase implements Closeable {

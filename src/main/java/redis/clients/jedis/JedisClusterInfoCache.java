@@ -49,11 +49,31 @@ public class JedisClusterInfoCache {
 
     try {
       reset();
+
+//     发送获取槽位信息的命令
+//
+//     返回的结果数组为：
+//      {
+//        {
+//          哈希槽起始编号
+//          哈希槽结束编号
+//          哈希槽对应master节点，节点使用IP / Port表示
+//          master节点的第一个副本
+//          第二个副本
+//          …
+//        }
+//        …
+//      }
+//
+//     直到所有的副本都打印出来
+//     每个结果包含该哈希槽范围的所有存活的副本，没有存活的副本不会返回.
+//     （每个节点信息的）第三个（行）对象一定是IP/Port形式的master节点。之后的所有IP/Port都是该哈希槽范围的Redis副本。
       List<Object> slots = jedis.clusterSlots();
 
       for (Object slotInfoObj : slots) {
         List<Object> slotInfo = (List<Object>) slotInfoObj;
 
+        //当前槽没有对应的节点
         if (slotInfo.size() <= MASTER_NODE_INDEX) {
           continue;
         }
@@ -61,6 +81,7 @@ public class JedisClusterInfoCache {
         List<Integer> slotNums = getAssignedSlotArray(slotInfo);
 
         // hostInfos
+        // 为每个节点（master及副本）创建对应的客户端连接池，
         int size = slotInfo.size();
         for (int i = MASTER_NODE_INDEX; i < size; i++) {
           List<Object> hostInfos = (List<Object>) slotInfo.get(i);
@@ -70,6 +91,8 @@ public class JedisClusterInfoCache {
 
           HostAndPort targetNode = generateHostAndPort(hostInfos);
           setupNodeIfNotExist(targetNode);
+
+          // 将槽和对应的master节点联系起来
           if (i == MASTER_NODE_INDEX) {
             assignSlotsToNode(slotNums, targetNode);
           }
@@ -122,6 +145,10 @@ public class JedisClusterInfoCache {
     }
   }
 
+  /**
+   * 获取集群中槽的信息
+   * @param jedis
+   */
   private void discoverClusterSlots(Jedis jedis) {
     List<Object> slots = jedis.clusterSlots();
     this.slots.clear();
@@ -152,6 +179,11 @@ public class JedisClusterInfoCache {
         ((Long) hostInfos.get(1)).intValue());
   }
 
+  /**
+   * 如果该节点不存在，则添加该节点并为其创建一个对应的客户端连接池（JedisPool）
+   * @param node
+   * @return
+   */
   public JedisPool setupNodeIfNotExist(HostAndPort node) {
     w.lock();
     try {
@@ -178,6 +210,12 @@ public class JedisClusterInfoCache {
     }
   }
 
+  /**
+   * 为所有槽指定客户端连接池
+   * 节点targetNode分摊targetSlots中的所有槽，即targetSlots槽对应的连接池为targetNode对应的连接池
+   * @param targetSlots
+   * @param targetNode
+   */
   public void assignSlotsToNode(List<Integer> targetSlots, HostAndPort targetNode) {
     w.lock();
     try {
@@ -229,6 +267,7 @@ public class JedisClusterInfoCache {
   }
 
   /**
+   * 清除本地存储的节点和槽位信息
    * Clear discovered nodes collections and gently release allocated resources
    */
   public void reset() {
@@ -262,6 +301,13 @@ public class JedisClusterInfoCache {
     return getNodeKey(jedis.getClient());
   }
 
+  /**
+   * slotInfo.get(0)哈希槽起始编号
+   * slotInfo.get(1)哈希槽结束编号
+   * 获取该范围内的所有槽的编号
+   * @param slotInfo
+   * @return
+   */
   private List<Integer> getAssignedSlotArray(List<Object> slotInfo) {
     List<Integer> slotNums = new ArrayList<Integer>();
     for (int slot = ((Long) slotInfo.get(0)).intValue(); slot <= ((Long) slotInfo.get(1))

@@ -21,6 +21,9 @@ import redis.clients.jedis.util.RedisInputStream;
 import redis.clients.jedis.util.RedisOutputStream;
 import redis.clients.jedis.util.SafeEncoder;
 
+/**
+ * 主要用来和redisServer进行交互
+ */
 public class Connection implements Closeable {
 
   private static final byte[][] EMPTY_ARGS = new byte[0][];
@@ -163,8 +166,11 @@ public class Connection implements Closeable {
     this.port = port;
   }
 
+  /**
+   * 使用Socket进行通信，使用长连接减小建立连接的开销
+   */
   public void connect() {
-    if (!isConnected()) {
+    if (!isConnected()) { // 如果之前没有连接或者连接已失效，则需要重新建立连接
       try {
         socket = new Socket();
         // ->@wjw_add

@@ -12,6 +12,9 @@ import org.apache.commons.pool2.impl.GenericObjectPoolConfig;
 import redis.clients.jedis.exceptions.JedisException;
 import redis.clients.jedis.util.JedisURIHelper;
 
+/**
+ * Jedis对象池
+ */
 public class JedisPool extends JedisPoolAbstract {
 
   public JedisPool() {

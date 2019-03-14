@@ -34,6 +34,15 @@ public abstract class JedisClusterConnectionHandler implements Closeable {
     return cache.getNodes();
   }
 
+  /**
+   * 集群初始化，获取节点信息、槽位信息
+   * @param startNodes
+   * @param poolConfig
+   * @param connectionTimeout
+   * @param soTimeout
+   * @param password
+   * @param clientName
+   */
   private void initializeSlotsCache(Set<HostAndPort> startNodes, GenericObjectPoolConfig poolConfig,
                                     int connectionTimeout, int soTimeout, String password, String clientName) {
     for (HostAndPort hostAndPort : startNodes) {

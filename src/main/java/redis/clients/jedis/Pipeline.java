@@ -6,6 +6,9 @@ import java.util.List;
 
 import redis.clients.jedis.exceptions.JedisDataException;
 
+/**
+ * 实现Redis批量操作功能--Pipeline
+ */
 public class Pipeline extends MultiKeyPipelineBase implements Closeable {
 
   private MultiResponseBuilder currentMulti;

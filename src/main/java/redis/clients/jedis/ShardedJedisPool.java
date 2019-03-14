@@ -11,6 +11,10 @@ import org.apache.commons.pool2.impl.GenericObjectPoolConfig;
 import redis.clients.jedis.util.Hashing;
 import redis.clients.jedis.util.Pool;
 
+/**
+ * 池化ShardedJedis，功能同redis.clients.jedis.JedisPool
+ * @see JedisPool
+ */
 public class ShardedJedisPool extends Pool<ShardedJedis> {
   public ShardedJedisPool(final GenericObjectPoolConfig poolConfig, List<JedisShardInfo> shards) {
     this(poolConfig, shards, Hashing.MURMUR_HASH);

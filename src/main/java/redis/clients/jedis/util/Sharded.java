@@ -51,6 +51,7 @@ public class Sharded<R, S extends ShardInfo<R>> {
   private void initialize(List<S> shards) {
     nodes = new TreeMap<Long, S>();
 
+    // 为每个服务端实例生成多个对应的哈希槽
     for (int i = 0; i != shards.size(); ++i) {
       final S shardInfo = shards.get(i);
       if (shardInfo.getName() == null) for (int n = 0; n < 160 * shardInfo.getWeight(); n++) {
@@ -71,6 +72,15 @@ public class Sharded<R, S extends ShardInfo<R>> {
     return resources.get(getShardInfo(key));
   }
 
+  /**
+   * 找到第一个比当前key的hash值大的哈希槽
+   *
+   * java.util.TreeMap#tailMap(java.lang.Object)返回其键大于from_Key的映射部分
+   * @see TreeMap#tailMap(java.lang.Object)
+   *
+   * @param key
+   * @return 返回值为一个ShardInfo实例
+   */
   public S getShardInfo(byte[] key) {
     SortedMap<Long, S> tail = nodes.tailMap(algo.hash(key));
     if (tail.isEmpty()) {

@@ -88,6 +88,22 @@ public final class Protocol {
     sendCommand(os, command.getRaw(), args);
   }
 
+
+
+//      --------------------------------
+//     | *<参数数量> CR LF
+//     | $<参数 1 的字节数量> CR LF
+//     | <参数 1 的数据> CR LF
+//     | ...
+//     | $<参数 N 的字节数量> CR LF
+//     | <参数 N 的数据> CR LF
+//      --------------------------------
+  /**
+   * 按照请求协议格式发送命令数据
+   * @param os
+   * @param command
+   * @param args
+   */
   private static void sendCommand(final RedisOutputStream os, final byte[] command,
       final byte[]... args) {
     try {

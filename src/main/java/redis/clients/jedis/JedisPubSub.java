@@ -112,8 +112,12 @@ public abstract class JedisPubSub {
 
   public void proceed(Client client, String... channels) {
     this.client = client;
+
+    // 发送订阅命令
     client.subscribe(channels);
     client.flush();
+
+    // 根据不同的返回消息类型进行不同的处理
     process(client);
   }
 
